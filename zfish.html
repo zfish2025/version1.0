@@ -1,0 +1,1047 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>紫小鱼</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        wood: {
+                            light: '#F2E9DC',
+                            DEFAULT: '#D9C8A7',
+                            dark: '#8B6E4E',
+                        },
+                        purple: '#A68BB8',
+                        cream: '#FCFAF7',
+                        dark: '#3A3530',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: none;
+            }
+            .text-shadow-lg {
+                text-shadow: none;
+            }
+            .text-stroke {
+                -webkit-text-stroke: 1px #FFFFFF;
+                text-stroke: 1px #FFFFFF;
+            }
+            .animate-float {
+                animation: float 1.2s ease-out forwards;
+            }
+            .panel-glass {
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+            .soft-edge {
+                filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
+                transition: all 0.3s ease;
+            }
+            .soft-edge:hover {
+                filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2));
+                transform: translateY(-2px);
+            }
+            .language-selector {
+                position: absolute;
+                top: 16px;
+                right: 16px;
+                cursor: pointer;
+                z-index: 100;
+            }
+            .language-dropdown {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                margin-top: 5px;
+                padding: 8px 0;
+                background-color: rgba(255, 255, 255, 0.9);
+                border-radius: 6px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 101;
+                min-width: 120px;
+            }
+            .language-option {
+                padding: 6px 16px;
+                color: #3A3530;
+                transition: background-color 0.2s;
+            }
+            .language-option:hover {
+                background-color: rgba(166, 139, 184, 0.2);
+            }
+            .nav-item {
+                transition: all 0.3s ease;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 12px 8px;
+                border-radius: 10px;
+                cursor: pointer;
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                border: 1px solid rgba(217, 200, 167, 0.4);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            }
+            .nav-item:hover {
+                transform: translateY(-3px) scale(1.05);
+                background-color: rgba(255, 255, 255, 0.25);
+                border-color: rgba(217, 200, 167, 0.6);
+            }
+            .nav-item:active {
+                transform: translateY(-1px) scale(1.02);
+            }
+            .nav-item i {
+                transition: all 0.3s ease;
+            }
+            .nav-item:hover i {
+                transform: scale(1.2);
+                color: #C4A9E4;
+            }
+            .nav-text {
+                width: 100%;
+                white-space: normal;
+                text-align: center;
+                line-height: 1.2;
+                font-size: 14px;
+                padding: 0 2px;
+            }
+            
+            /* 优惠券提示样式 */
+            .coupon-notification {
+                position: fixed;
+                bottom: 20%;
+                left: 50%;
+                transform: translateX(-50%) translateY(150%);
+                background: linear-gradient(135deg, #A68BB8 0%, #8B6E4E 100%);
+                color: white;
+                padding: 16px 20px;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                min-width: 280px;
+                max-width: 90%;
+                transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                opacity: 0;
+                pointer-events: none;
+            }
+            
+            .coupon-notification.show {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+            
+            .coupon-icon {
+                background-color: rgba(255, 255, 255, 0.2);
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            
+            .coupon-content {
+                flex-grow: 1;
+            }
+            
+            .coupon-title {
+                font-weight: bold;
+                font-size: 16px;
+                margin-bottom: 4px;
+            }
+            
+            .coupon-desc {
+                font-size: 13px;
+                opacity: 0.9;
+            }
+            
+            /* 优惠券列表样式 */
+            .coupons-container {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.7);
+                z-index: 2000;
+                overflow-y: auto;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+            
+            .coupons-container.show {
+                display: block;
+            }
+            
+            .coupons-panel {
+                background-color: white;
+                border-radius: 16px;
+                padding: 24px 16px;
+                max-width: 500px;
+                margin: 60px auto 20px;
+            }
+            
+            .coupons-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            
+            .coupons-title {
+                font-size: 20px;
+                font-weight: bold;
+                color: #3A3530;
+            }
+            
+            .close-coupons {
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #8B6E4E;
+            }
+            
+            .coupon-item {
+                border-radius: 12px;
+                overflow: hidden;
+                margin-bottom: 16px;
+                border: 1px solid #F2E9DC;
+                position: relative;
+            }
+            
+            .coupon-active {
+                background: linear-gradient(90deg, #F9F5EE 0%, #F2E9DC 100%);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            }
+            
+            .coupon-inactive {
+                background-color: #F9F9F9;
+                opacity: 0.7;
+            }
+            
+            .coupon-body {
+                display: flex;
+                padding: 16px;
+            }
+            
+            .coupon-value {
+                font-size: 28px;
+                font-weight: bold;
+                color: #A68BB8;
+                padding-right: 16px;
+                border-right: 2px dashed rgba(139, 110, 78, 0.2);
+                margin-right: 16px;
+                min-width: 80px;
+                text-align: center;
+            }
+            
+            .coupon-info {
+                flex-grow: 1;
+            }
+            
+            .coupon-name {
+                font-weight: bold;
+                margin-bottom: 4px;
+                color: #3A3530;
+            }
+            
+            .coupon-conditions {
+                font-size: 12px;
+                color: #8B6E4E;
+                margin-bottom: 8px;
+            }
+            
+            .coupon-status {
+                font-size: 12px;
+                padding: 2px 8px;
+                border-radius: 12px;
+                display: inline-block;
+            }
+            
+            .status-active {
+                background-color: rgba(166, 139, 184, 0.1);
+                color: #A68BB8;
+            }
+            
+            .status-locked {
+                background-color: rgba(139, 110, 78, 0.1);
+                color: #8B6E4E;
+            }
+            
+            .use-coupon-btn {
+                background-color: #A68BB8;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 6px 12px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-top: 8px;
+                transition: background-color 0.2s;
+            }
+            
+            .use-coupon-btn:hover {
+                background-color: #9173a6;
+            }
+            
+            .use-coupon-btn:disabled {
+                background-color: #ccc;
+                cursor: not-allowed;
+            }
+        }
+        
+        @keyframes float {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                opacity: 0.9;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-80px) scale(1.2);
+            }
+        }
+        
+        @keyframes tap {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+        
+        .tap-animation {
+            animation: tap 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between p-0 m-0 relative overflow-hidden touch-manipulation">
+    <!-- 全屏背景图 -->
+    <div class="absolute inset-0 z-0">
+        <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/171cb18e59554b67aa8ba414f164d346.jpg~tplv-a9rns2rl98-24:720:720.image?rk3s=1fb89129&x-expires=1758016746&x-signature=7fNVNWwAVpzO%2F8XdFl1LGaqqifI%3D" 
+             alt="木质背景图" 
+             class="w-full h-full object-cover object-center">
+        <div class="absolute inset-0 bg-dark/20"></div>
+    </div>
+    
+    <!-- 所有内容容器 -->
+    <div class="relative z-10 w-full flex flex-col items-center justify-between min-h-screen p-4 box-sizing: border-box;">
+        <!-- 顶部区域：标题和语言选择器 -->
+        <div class="w-full mt-6 mb-2 relative">
+            <div class="text-left ml-4">
+                <h1 class="text-[clamp(1.2rem,6vw,1.8rem)] font-bold text-purple flex items-center text-shadow-lg">
+                    <i class="fa fa-leaf mr-2"></i>紫小鱼
+                </h1>
+                <!-- 新增产品标语（已加粗） -->
+                <p class="text-purple text-sm mt-1 ml-7 font-bold" data-i18n="slogan">敲敲小鱼 积攒福报</p>
+            </div>
+            
+            <!-- 语言选择模块 - 定位到右上角 -->
+            <div class="language-selector panel-glass px-3 py-1.5 rounded-full text-cream text-sm border border-wood/40">
+                <span id="current-language">中文简体</span>
+                <i class="fa fa-chevron-down ml-1 text-xs"></i>
+                
+                <div id="language-dropdown" class="language-dropdown hidden">
+                    <div class="language-option" data-lang="zh-CN">中文简体</div>
+                    <div class="language-option" data-lang="zh-TW">中文繁体</div>
+                    <div class="language-option" data-lang="en">English</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 福报计数面板 -->
+        <div class="flex justify-center gap-8 my-4 panel-glass rounded-xl p-4 shadow-xl border border-wood/40 w-full max-w-xs transition-all duration-300 hover:border-wood/60">
+            <div class="text-center">
+                <p class="text-cream/90 text-sm mb-1 text-shadow" data-i18n="today_merit">今日福报</p>
+                <p id="today-count" class="text-2xl sm:text-3xl font-bold text-cream text-shadow-lg">0</p>
+            </div>
+            <div class="h-12 w-px bg-wood/30 self-center"></div>
+            <div class="text-center">
+                <p class="text-cream/90 text-sm mb-1 text-shadow" data-i18n="total_merit">累计福报</p>
+                <p id="total-count" class="text-2xl sm:text-3xl font-bold text-cream text-shadow-lg">0</p>
+            </div>
+        </div>
+        
+        <!-- 木鱼交互区域 -->
+        <div class="relative flex-grow flex items-center justify-center w-full max-w-md">
+            <div class="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
+                <div id="wooden-fish" class="soft-edge cursor-pointer">
+                    <!-- 木鱼图片 -->
+                    <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/6ef8bf5e76d94e5ebe92168decba7559.png~tplv-a9rns2rl98-24:720:720.png?rk3s=1fb89129&x-expires=1758018247&x-signature=eFcU0eptrt6o1w2cRW241sSJDfo%3D" 
+                         alt="木鱼矢量图" 
+                         class="max-w-[100%] h-auto mx-auto opacity-95">
+                </div>
+            </div>
+            
+            <div id="floating-text-container" class="absolute inset-0 pointer-events-none overflow-hidden z-50"></div>
+        </div>
+        
+        <!-- 底部三个功能模块 -->
+        <div class="w-full flex justify-around items-center mt-6 mb-5 max-w-md gap-2 px-2">
+            <div class="nav-item flex-1 min-w-[90px]">
+                <i class="fa fa-star text-purple text-4xl mb-2"></i>
+                <span class="text-cream/90 font-bold text-shadow nav-text" data-i18n="ziwei">紫微斗数</span>
+            </div>
+            
+            <div class="nav-item flex-1 min-w-[90px]">
+                <a href="https://www.taobao.com" target="_blank" rel="noopener noreferrer" class="w-full h-full flex flex-col items-center">
+                    <i class="fa fa-shopping-bag text-purple text-4xl mb-2"></i>
+                    <span class="text-cream/90 font-bold text-shadow nav-text" data-i18n="mall">商城</span>
+                </a>
+            </div>
+            
+            <div class="nav-item flex-1 min-w-[90px]" id="my-profile">
+                <i class="fa fa-user text-purple text-4xl mb-2"></i>
+                <span class="text-cream/90 font-bold text-shadow nav-text" data-i18n="my">我的</span>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer class="text-center text-cream/70 text-sm pb-2">
+            <p data-i18n="copyright">© 2025 紫小鱼</p>
+        </footer>
+    </div>
+
+    <!-- 优惠券通知提示 -->
+    <div id="coupon-notification" class="coupon-notification">
+        <div class="coupon-icon">
+            <i class="fa fa-ticket text-white text-xl"></i>
+        </div>
+        <div class="coupon-content">
+            <div class="coupon-title">获得新优惠券！</div>
+            <div class="coupon-desc">您已获得2元商城优惠券，可在"我的"中查看</div>
+        </div>
+    </div>
+
+    <!-- 优惠券列表面板 -->
+    <div id="coupons-container" class="coupons-container">
+        <div class="coupons-panel">
+            <div class="coupons-header">
+                <h2 class="coupons-title">我的优惠券</h2>
+                <button id="close-coupons" class="close-coupons">×</button>
+            </div>
+            
+            <div id="coupons-list">
+                <!-- 优惠券项目将通过JS动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 音效元素 -->
+    <audio id="tap-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-wood-hit-1541.mp3" type="audio/mpeg">
+    </audio>
+     <audio id="unlock-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- 多语言数据 -->
+    <script>
+        const translations = {
+            "zh-CN": {
+                "today_merit": "今日福报",
+                "total_merit": "累计福报",
+                "ziwei": "紫微斗数",
+                "mall": "商城",
+                "my": "我的",
+                "copyright": "© 2025 紫小鱼",
+                "slogan": "敲敲小鱼 积攒福报",
+                "good karma+1": "善缘+1",
+                "wealth+1": "财富+1",
+                "love+1": "桃花+1",
+                "luck+1": "幸运+1",
+                "happiness+1": "快乐+1",
+                "health+1": "健康+1",
+                "wisdom+1": "智慧+1",
+                "promotion+1": "高升+1",
+                "fortune+1": "发财+1",
+                "coupon_unlock_title": "获得新优惠券！",
+                "coupon_2_desc": "您已获得2元商城优惠券，可在\"我的\"中查看",
+                "coupon_5_desc": "您已获得5元商城优惠券，可在\"我的\"中查看",
+                "coupon_10_desc": "您已获得10元商城优惠券，可在\"我的\"中查看",
+                "my_coupons": "我的优惠券",
+                "coupon_use": "立即使用",
+                "coupon_condition_daily_100": "每日福报达到100解锁",
+                "coupon_condition_daily_500": "每日福报达到500解锁",
+                "coupon_condition_total_10000": "累计福报达到10000解锁",
+                "coupon_status_active": "已激活",
+                "coupon_status_locked": "未解锁",
+                "coupon_name_2": "商城2元优惠券",
+                "coupon_name_5": "商城5元优惠券",
+                "coupon_name_10": "商城10元优惠券"
+            },
+            "zh-TW": {
+                "today_merit": "今日福報",
+                "total_merit": "累計福報",
+                "ziwei": "紫微斗數",
+                "mall": "商城",
+                "my": "我的",
+                "copyright": "© 2025 紫小魚",
+                "slogan": "敲敲小魚 積攢福報",
+                "good karma+1": "善緣+1",
+                "wealth+1": "財富+1",
+                "love+1": "桃花+1",
+                "luck+1": "幸運+1",
+                "happiness+1": "快樂+1",
+                "health+1": "健康+1",
+                "wisdom+1": "智慧+1",
+                "promotion+1": "高升+1",
+                "fortune+1": "發財+1",
+                "coupon_unlock_title": "獲得新優惠券！",
+                "coupon_2_desc": "您已獲得2元商城優惠券，可在\"我的\"中查看",
+                "coupon_5_desc": "您已獲得5元商城優惠券，可在\"我的\"中查看",
+                "coupon_10_desc": "您已獲得10元商城優惠券，可在\"我的\"中查看",
+                "my_coupons": "我的優惠券",
+                "coupon_use": "立即使用",
+                "coupon_condition_daily_100": "每日福報達到100解鎖",
+                "coupon_condition_daily_500": "每日福報達到500解鎖",
+                "coupon_condition_total_10000": "累計福報達到10000解鎖",
+                "coupon_status_active": "已激活",
+                "coupon_status_locked": "未解鎖",
+                "coupon_name_2": "商城2元優惠券",
+                "coupon_name_5": "商城5元優惠券",
+                "coupon_name_10": "商城10元優惠券"
+            },
+            "en": {
+                "today_merit": "Today's Merit",
+                "total_merit": "Total Merit",
+                "ziwei": "Zi Wei Dou Shu",
+                "mall": "Mall",
+                "my": "My Profile",
+                "copyright": "© 2025 Z-Fish",
+                "slogan": "Knock Fish Gain Blessings",  // 修改后的英文标语
+                "good karma+1": "Good Karma+1",
+                "wealth+1": "Wealth+1",
+                "love+1": "Love+1",
+                "luck+1": "Luck+1",
+                "happiness+1": "Happiness+1",
+                "health+1": "Health+1",
+                "wisdom+1": "Wisdom+1",
+                "promotion+1": "Promotion+1",
+                "fortune+1": "Fortune+1",
+                "coupon_unlock_title": "New coupon unlocked!",
+                "coupon_2_desc": "You've earned a ¥2 mall coupon. Check it in \"My Profile\"",
+                "coupon_5_desc": "You've earned a ¥5 mall coupon. Check it in \"My Profile\"",
+                "coupon_10_desc": "You've earned a ¥10 mall coupon. Check it in \"My Profile\"",
+                "my_coupons": "My Coupons",
+                "coupon_use": "Use Now",
+                "coupon_condition_daily_100": "Unlocked when daily merit reaches 100",
+                "coupon_condition_daily_500": "Unlocked when daily merit reaches 500",
+                "coupon_condition_total_10000": "Unlocked when total merit reaches 10000",
+                "coupon_status_active": "Active",
+                "coupon_status_locked": "Locked",
+                "coupon_name_2": "¥2 Mall Coupon",
+                "coupon_name_5": "¥5 Mall Coupon",
+                "coupon_name_10": "¥10 Mall Coupon"
+            }
+        };
+        
+        let currentPhrases = [
+            "善缘+1", "财富+1", "桃花+1", 
+            "幸运+1", "快乐+1", "健康+1", "智慧+1", "高升+1", "发财+1"
+        ];
+        
+        // 优惠券类型定义
+        const couponTypes = {
+            DAILY_100: { 
+                id: 'daily_100', 
+                amount: 2, 
+                condition: 100, 
+                type: 'daily', 
+                nameKey: 'coupon_name_2',
+                conditionKey: 'coupon_condition_daily_100',
+                descriptionKey: 'coupon_2_desc'
+            },
+            DAILY_500: { 
+                id: 'daily_500', 
+                amount: 5, 
+                condition: 500, 
+                type: 'daily', 
+                nameKey: 'coupon_name_5',
+                conditionKey: 'coupon_condition_daily_500',
+                descriptionKey: 'coupon_5_desc'
+            },
+            TOTAL_10000: { 
+                id: 'total_10000', 
+                amount: 10, 
+                condition: 10000, 
+                type: 'total', 
+                nameKey: 'coupon_name_10',
+                conditionKey: 'coupon_condition_total_10000',
+                descriptionKey: 'coupon_10_desc'
+            }
+        };
+    </script>
+
+    <script>
+        // 获取DOM元素
+        const floatingTextContainer = document.getElementById('floating-text-container');
+        const tapSound = document.getElementById('tap-sound');
+        const unlockSound = document.getElementById('unlock-sound');
+        const todayCountEl = document.getElementById('today-count');
+        const totalCountEl = document.getElementById('total-count');
+        const woodenFish = document.getElementById('wooden-fish');
+        const languageSelector = document.querySelector('.language-selector');
+        const languageDropdown = document.getElementById('language-dropdown');
+        const currentLanguageEl = document.getElementById('current-language');
+        const languageOptions = document.querySelectorAll('.language-option');
+        const myProfileBtn = document.getElementById('my-profile');
+        const navTexts = document.querySelectorAll('.nav-text');
+        const couponNotification = document.getElementById('coupon-notification');
+        const couponNotificationTitle = couponNotification.querySelector('.coupon-title');
+        const couponNotificationDesc = couponNotification.querySelector('.coupon-desc');
+        const couponsContainer = document.getElementById('coupons-container');
+        const couponsList = document.getElementById('coupons-list');
+        const closeCouponsBtn = document.getElementById('close-coupons');
+        
+        // 计数数据
+        let counts = {
+            today: 0,
+            total: 0,
+            lastDate: null
+        };
+        
+        // 优惠券数据
+        let coupons = {
+            daily_100: { unlocked: false, date: null },
+            daily_500: { unlocked: false, date: null },
+            total_10000: { unlocked: false, date: null }
+        };
+        
+        // 初始化计数和优惠券
+        function initData() {
+            initCounts();
+            initCoupons();
+            renderCouponsList();
+        }
+        
+        // 初始化计数
+        function initCounts() {
+            const saved = localStorage.getItem('meritCounts');
+            const today = new Date().toDateString();
+            
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                counts.total = parsed.total || 0;
+                
+                // 检查是否是同一天
+                if (parsed.lastDate === today) {
+                    counts.today = parsed.today || 0;
+                } else {
+                    counts.today = 0;
+                }
+                counts.lastDate = today;
+            } else {
+                counts.lastDate = today;
+            }
+            
+            updateCountDisplay();
+        }
+        
+        // 初始化优惠券
+        function initCoupons() {
+            const saved = localStorage.getItem('userCoupons');
+            const today = new Date().toDateString();
+            
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                
+                // 恢复优惠券数据
+                Object.keys(couponTypes).forEach(key => {
+                    const couponId = couponTypes[key].id;
+                    if (parsed[couponId]) {
+                        coupons[couponId] = parsed[couponId];
+                        
+                        // 对于每日优惠券，如果不是今天解锁的，重置为未解锁
+                        if (couponTypes[key].type === 'daily' && coupons[couponId].date !== today) {
+                            coupons[couponId].unlocked = false;
+                        }
+                    }
+                });
+            }
+            
+            // 检查是否有已满足条件但未解锁的优惠券
+            checkCouponConditions(false);
+        }
+        
+        // 保存所有数据
+        function saveAllData() {
+            saveCounts();
+            saveCoupons();
+        }
+        
+        // 更新计数显示
+        function updateCountDisplay() {
+            todayCountEl.textContent = counts.today;
+            totalCountEl.textContent = counts.total;
+            
+            // 添加数字变化动画
+            todayCountEl.classList.add('scale-110');
+            totalCountEl.classList.add('scale-110');
+            
+            setTimeout(() => {
+                todayCountEl.classList.remove('scale-110');
+                totalCountEl.classList.remove('scale-110');
+            }, 300);
+        }
+        
+        // 保存计数数据
+        function saveCounts() {
+            counts.lastDate = new Date().toDateString();
+            localStorage.setItem('meritCounts', JSON.stringify(counts));
+        }
+        
+        // 保存优惠券数据
+        function saveCoupons() {
+            localStorage.setItem('userCoupons', JSON.stringify(coupons));
+        }
+        
+        // 检查优惠券解锁条件
+        function checkCouponConditions(showNotification = true) {
+            const today = new Date().toDateString();
+            let unlockedAny = false;
+            
+            // 检查每日100福报优惠券
+            if (!coupons.daily_100.unlocked && counts.today >= couponTypes.DAILY_100.condition) {
+                coupons.daily_100.unlocked = true;
+                coupons.daily_100.date = today;
+                unlockedAny = true;
+                if (showNotification) {
+                    showCouponNotification(couponTypes.DAILY_100);
+                }
+            }
+            
+            // 检查每日500福报优惠券
+            if (!coupons.daily_500.unlocked && counts.today >= couponTypes.DAILY_500.condition) {
+                coupons.daily_500.unlocked = true;
+                coupons.daily_500.date = today;
+                unlockedAny = true;
+                if (showNotification) {
+                    showCouponNotification(couponTypes.DAILY_500);
+                }
+            }
+            
+            // 检查累计10000福报优惠券
+            if (!coupons.total_10000.unlocked && counts.total >= couponTypes.TOTAL_10000.condition) {
+                coupons.total_10000.unlocked = true;
+                coupons.total_10000.date = today;
+                unlockedAny = true;
+                if (showNotification) {
+                    showCouponNotification(couponTypes.TOTAL_10000);
+                }
+            }
+            
+            if (unlockedAny) {
+                saveCoupons();
+                renderCouponsList();
+            }
+        }
+        
+        // 显示优惠券解锁通知
+        function showCouponNotification(coupon) {
+            // 清除任何可能存在的计时器
+            if (window.couponTimer) {
+                clearTimeout(window.couponTimer);
+            }
+            
+            // 确保通知先隐藏
+            couponNotification.classList.remove('show');
+            
+            // 播放解锁音效
+            unlockSound.currentTime = 0;
+            unlockSound.play().catch(e => {
+                console.log("音效播放失败:", e);
+            });
+            
+            // 更新通知内容
+            const lang = currentLanguageEl.textContent === '中文简体' ? 'zh-CN' : 
+                       currentLanguageEl.textContent === '中文繁体' ? 'zh-TW' : 'en';
+            couponNotificationTitle.textContent = translations[lang]['coupon_unlock_title'];
+            couponNotificationDesc.textContent = translations[lang][coupon.descriptionKey];
+            
+            // 强制重绘
+            void couponNotification.offsetWidth;
+            
+            // 显示通知
+            couponNotification.classList.add('show');
+            
+            // 3秒后自动隐藏通知
+            window.couponTimer = setTimeout(() => {
+                couponNotification.classList.remove('show');
+                window.couponTimer = null;
+            }, 3000);
+        }
+        
+        // 渲染优惠券列表
+        function renderCouponsList() {
+            const lang = currentLanguageEl.textContent === '中文简体' ? 'zh-CN' : 
+                        currentLanguageEl.textContent === '中文繁体' ? 'zh-TW' : 'en';
+            couponsList.innerHTML = '';
+            
+            // 按条件从低到高排序优惠券
+            const sortedCoupons = [
+                couponTypes.DAILY_100,
+                couponTypes.DAILY_500,
+                couponTypes.TOTAL_10000
+            ];
+            
+            sortedCoupons.forEach(coupon => {
+                const isUnlocked = coupons[coupon.id].unlocked;
+                const couponEl = document.createElement('div');
+                couponEl.className = `coupon-item ${isUnlocked ? 'coupon-active' : 'coupon-inactive'}`;
+                
+                couponEl.innerHTML = `
+                    <div class="coupon-body">
+                        <div class="coupon-value">¥${coupon.amount}</div>
+                        <div class="coupon-info">
+                            <div class="coupon-name">${translations[lang][coupon.nameKey]}</div>
+                            <div class="coupon-conditions">${translations[lang][coupon.conditionKey]}</div>
+                            <div class="coupon-status ${isUnlocked ? 'status-active' : 'status-locked'}">
+                                ${isUnlocked ? translations[lang]['coupon_status_active'] : translations[lang]['coupon_status_locked']}
+                            </div>
+                            <button class="use-coupon-btn" ${!isUnlocked ? 'disabled' : ''} 
+                                    onclick="window.open('https://www.taobao.com', '_blank')">
+                                ${translations[lang]['coupon_use']}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                couponsList.appendChild(couponEl);
+            });
+        }
+        
+        // 显示优惠券面板
+        function showCouponsPanel() {
+            couponsContainer.classList.add('show');
+        }
+        
+        // 隐藏优惠券面板
+        function hideCouponsPanel() {
+            couponsContainer.classList.remove('show');
+        }
+        
+        // 木鱼点击处理函数
+        function handleFishClick(event) {
+            event.stopPropagation();
+            
+            // 更新计数
+            counts.today++;
+            counts.total++;
+            updateCountDisplay();
+            saveCounts();
+            
+            // 检查是否解锁新优惠券
+            checkCouponConditions();
+            
+            // 计算文字位置
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const x = viewportWidth / 2 + (Math.random() - 0.5) * 60;
+            const y = viewportHeight * 0.1 + (Math.random() - 0.5) * 20;
+            
+            // 触发文字动画
+            triggerPhraseAnimation(x, y);
+            
+            // 播放敲击音效
+            playTapSound();
+            
+            // 添加木鱼点击动画
+            woodenFish.classList.add('tap-animation');
+            setTimeout(() => {
+                woodenFish.classList.remove('tap-animation');
+            }, 300);
+        }
+        
+        // 触摸事件支持
+        function handleTouch(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            handleFishClick(event);
+        }
+        
+        // 播放敲击音效
+        function playTapSound() {
+            tapSound.currentTime = 0;
+            tapSound.play().catch(e => {
+                console.log("音效播放失败:", e);
+            });
+        }
+        
+        // 触发提示文字动画
+        function triggerPhraseAnimation(x, y) {
+            // 创建提示文字元素
+            const textEl = document.createElement('div');
+            const randomPhrase = currentPhrases[Math.floor(Math.random() * currentPhrases.length)];
+            
+            textEl.textContent = randomPhrase;
+            textEl.className = 'absolute font-bold text-shadow-lg text-cream text-stroke';
+            
+            // 字体大小设置
+            const baseSize = window.innerWidth <= 640 ? 20 : 26;
+            textEl.style.fontSize = `${Math.random() * 6 + baseSize}px`;
+            
+            // 确保文字在最上层
+            textEl.style.zIndex = '1000';
+            
+            // 设置位置
+            textEl.style.left = `${x}px`;
+            textEl.style.top = `${y}px`;
+            textEl.style.transform = 'translate(-50%, -50%)';
+            textEl.style.backgroundColor = 'transparent';
+            textEl.style.opacity = '0';
+            
+            // 添加到容器
+            floatingTextContainer.appendChild(textEl);
+            
+            // 强制重绘
+            textEl.offsetHeight;
+            
+            // 触发动画
+            setTimeout(() => {
+                textEl.classList.add('animate-float');
+                textEl.style.opacity = '1';
+            }, 10);
+            
+            // 动画结束后移除元素
+            setTimeout(() => {
+                if (floatingTextContainer.contains(textEl)) {
+                    floatingTextContainer.removeChild(textEl);
+                }
+            }, 1200);
+        }
+        
+        // 语言切换功能
+        function toggleLanguageDropdown() {
+            languageDropdown.classList.toggle('hidden');
+        }
+        
+        function changeLanguage(lang) {
+            // 更新当前语言显示
+            const langNames = {
+                'zh-CN': '中文简体',
+                'zh-TW': '中文繁体',
+                'en': 'English'
+            };
+            currentLanguageEl.textContent = langNames[lang];
+            
+            // 更新页面文本
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            
+            // 更新提示文字数组
+            currentPhrases = [
+                translations[lang]['good karma+1'],
+                translations[lang]['wealth+1'],
+                translations[lang]['love+1'],
+                translations[lang]['luck+1'],
+                translations[lang]['happiness+1'],
+                translations[lang]['health+1'],
+                translations[lang]['wisdom+1'],
+                translations[lang]['promotion+1'],
+                translations[lang]['fortune+1']
+            ];
+            
+            // 更新优惠券面板标题
+            document.querySelector('.coupons-title').textContent = translations[lang]['my_coupons'];
+            
+            // 重新渲染优惠券列表
+            renderCouponsList();
+            
+            // 隐藏下拉菜单
+            languageDropdown.classList.add('hidden');
+            
+            // 保存用户语言偏好
+            localStorage.setItem('preferredLanguage', lang);
+        }
+        
+        // "我的"页面跳转 - 显示优惠券面板
+        function goToProfilePage() {
+            showCouponsPanel();
+        }
+        
+        // 事件监听
+        woodenFish.addEventListener('click', handleFishClick);
+        woodenFish.addEventListener('touchstart', handleTouch);
+        
+        // 空格键触发
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                const mockEvent = { stopPropagation: () => {} };
+                handleFishClick(mockEvent);
+            }
+        });
+        
+        // 语言选择器事件
+        languageSelector.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleLanguageDropdown();
+        });
+        
+        languageOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                changeLanguage(option.getAttribute('data-lang'));
+            });
+        });
+        
+        // 点击页面其他地方关闭语言下拉菜单
+        document.addEventListener('click', () => {
+            if (!languageDropdown.classList.contains('hidden')) {
+                languageDropdown.classList.add('hidden');
+            }
+        });
+        
+        // "我的"按钮事件
+        myProfileBtn.addEventListener('click', goToProfilePage);
+        
+        // 优惠券面板事件
+        closeCouponsBtn.addEventListener('click', hideCouponsPanel);
+        
+        // 点击优惠券面板外部关闭
+        couponsContainer.addEventListener('click', (e) => {
+            if (e.target === couponsContainer) {
+                hideCouponsPanel();
+            }
+        });
+        
+        // 初始化页面
+        window.addEventListener('DOMContentLoaded', () => {
+            initData();
+            
+            // 检查用户是否有保存的语言偏好
+            const savedLang = localStorage.getItem('preferredLanguage');
+            if (savedLang && translations[savedLang]) {
+                changeLanguage(savedLang);
+            }
+        });
+    </script>
+</body></html>
+    
